@@ -105,7 +105,10 @@ return pool.query(queryString, values)
  * @return {Promise<[{}]>}  A promise to the properties.
  */
 const getAllProperties = function (options, limit = '10') {
+  console.log(options);
+  
   const queryParams = [];
+
   let queryString = `
   SELECT properties.*, AVG(rating) AS average_rating
   FROM properties
@@ -113,8 +116,8 @@ const getAllProperties = function (options, limit = '10') {
   `;
 
   if (options.city) {
-    queryParams.push(`%${options.city}%`);
-    queryString += `WHERE city LIKE $${queryParams.length} `;
+    queryParams.push(`%${options.city.slice(1)}%`);
+    queryString += `WHERE city LIKE $${queryParams.length}`;
   }
 
   if (options.owner_id) {
@@ -125,7 +128,7 @@ const getAllProperties = function (options, limit = '10') {
     }
 
     queryParams.push(Number(options.owner_id));
-    queryString += ` owner_id = $${queryParams.length} `;
+    queryString += ` owner_id = $${queryParams.length}`;
   }
 
   if (options.minimum_price_per_night) {
@@ -136,7 +139,7 @@ const getAllProperties = function (options, limit = '10') {
     }
 
     queryParams.push(Number(options.minimum_price_per_night));
-    queryString += ` cost_per_night > $${queryParams.length} `;
+    queryString += `cost_per_night >= $${queryParams.length}`;
   }
 
   if (options.maximum_price_per_night) {
@@ -164,9 +167,12 @@ const getAllProperties = function (options, limit = '10') {
   ORDER BY cost_per_night
   LIMIT $${queryParams.length};
   `;
+  
+  console.log(queryString, queryParams);
 
   return pool.query(queryString, queryParams)
     .then(response => {
+      console.log(response.rows);
       return response.rows;
     })
     .catch(err => {
@@ -181,10 +187,6 @@ const getAllProperties = function (options, limit = '10') {
  * @return {Promise<{}>} A promise to the property.
  */
 const addProperty = function (property) {
-  // const propertyId = Object.keys(properties).length + 1;
-  // property.id = propertyId;
-  // properties[propertyId] = property;
-  // return Promise.resolve(property);
   const queryString = `INSERT INTO properties (owner_id, title, 
     description, thumbnail_photo_url, cover_photo_url,
      cost_per_night, street, city, province, post_code, 
