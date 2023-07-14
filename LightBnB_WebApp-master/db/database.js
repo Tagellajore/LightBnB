@@ -23,7 +23,7 @@ pool.connect();
  * @param {String} email The email of the user.
  * @return {Promise<{}>} A promise to the user.
  */
-const getUserWithEmail = function (email) {
+const getUserWithEmail =  (email) => {
   return pool.query(`SELECT * FROM users WHERE email = $1;`, [email])
     .then((response) => {
      const user = response.rows[0]; // if it empty undefined || user object
@@ -36,7 +36,7 @@ const getUserWithEmail = function (email) {
  * @param {string} id The id of the user.
  * @return {Promise<{}>} A promise to the user.
  */
-const getUserWithId = function (id) {
+const getUserWithId = (id) => {
   return pool.query(`SELECT * FROM users WHERE id = $1`, [id])
     .then((response) => {
    const user = response.rows[0];
@@ -49,7 +49,7 @@ const getUserWithId = function (id) {
  * @param {{name: string, password: string, email: string}} user
  * @return {Promise<{}>} A promise to the user.
  */
-const addUser = function (user) {
+const addUser = (user) => {
   const queryString = `INSERT INTO users (name, email, password) 
   VALUES ($1, $2, $3)
   RETURNING *;`;
@@ -72,7 +72,7 @@ const addUser = function (user) {
  * @param {string} guest_id The id of the user.
  * @return {Promise<[{}]>} A promise to the reservations.
  */
-const getAllReservations = function (guest_id, limit = 10) {
+const getAllReservations = (guest_id, limit = 10) => {
 
  const queryString = `SELECT reservations.*, properties.*, avg(property_reviews.rating) as average_rating
  FROM reservations
@@ -104,7 +104,7 @@ return pool.query(queryString, values)
  * @param {*} limit The number of results to return.
  * @return {Promise<[{}]>}  A promise to the properties.
  */
-const getAllProperties = function (options, limit = '10') {
+const getAllProperties = (options, limit = '10') => {
   console.log(options);
   
   const queryParams = [];
@@ -186,7 +186,7 @@ const getAllProperties = function (options, limit = '10') {
  * @param {{}} property An object containing all of the property details.
  * @return {Promise<{}>} A promise to the property.
  */
-const addProperty = function (property) {
+const addProperty = (property) => {
   const queryString = `INSERT INTO properties (owner_id, title, 
     description, thumbnail_photo_url, cover_photo_url,
      cost_per_night, street, city, province, post_code, 
